@@ -18,7 +18,8 @@ const requestHeaders = {
 };
 
 const isLoading = ref(false);
-const areResultsDisplayed = ref(false);
+// const areResultsDisplayed = ref(false);
+const isFetchingDataFinished = ref(false);
 const searchInputValue = ref('');
 const sortValue = ref('');
 const orderValue = ref('');
@@ -30,6 +31,18 @@ const totalPages = computed(() => {
 });
 const currentPage = ref(1);
 const searchResults = ref(initialSearchResultsState);
+const areResultsDisplayed = computed(() => {
+	// (searchResults.value.repositories.length > 0 && searchTarget.value === 'repositories') ||
+	// 	(searchResults.value.users.length > 0 && searchTarget.value === 'users');
+
+	if (searchResults.value.repositories.length > 0 && searchTarget.value === 'repositories') {
+		return true;
+	} else if (searchResults.value.users.length > 0 && searchTarget.value === 'users') {
+		return true;
+	} else {
+		return false;
+	}
+});
 
 const handleInputChange = (e: Event) => (searchInputValue.value = (e.target as HTMLInputElement).value);
 
@@ -48,7 +61,8 @@ const handleOderCheckboxChange = (e: Event) => {
 const handleResultsPerPageValueChange = (e: Event) => (resultsPerPageValue.value = Number((e.target as HTMLSelectElement).value));
 
 const handleSearchTargetButtonClick = (e: Event) => {
-	areResultsDisplayed.value = false;
+	// areResultsDisplayed.value = false;
+	isFetchingDataFinished.value = false;
 	sortValue.value = '';
 	resultsNumber.value = 0;
 	currentPage.value = 1;
@@ -61,6 +75,7 @@ const handleFormSubmit = () => {
 	if (!searchInputValue.value) return;
 
 	isLoading.value = true;
+	isFetchingDataFinished.value = false;
 	if (searchTarget.value === 'repositories') {
 		getMatchingRepositories(searchInputValue.value);
 	} else {
@@ -74,7 +89,7 @@ const handleSearchResults = (resultsType: string, resultsArr: Record<string, any
 		[resultsType]: resultsArr,
 	};
 	isLoading.value = false;
-	areResultsDisplayed.value = true;
+	// areResultsDisplayed.value = true;
 };
 
 const getCommits = async (commitsUrl: string) => {
@@ -149,6 +164,7 @@ const getMatchingRepositories = async (searchPhrase: string) => {
 
 		handleSearchResults('repositories', repositoryData);
 		resultsNumber.value = Number(response.data.total_count);
+		isFetchingDataFinished.value = true;
 	} catch (error) {
 		console.log(error);
 	}
@@ -177,6 +193,8 @@ const getMatchingUsers = async (searchPhrase: string) => {
 		}));
 
 		handleSearchResults('users', results);
+		resultsNumber.value = Number(response.data.total_count);
+		isFetchingDataFinished.value = true;
 	} catch (error) {
 		console.log(error);
 	}
@@ -212,7 +230,7 @@ watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
 			:orderValue
 			:searchTarget />
 		<LoadingAnimation v-if="isLoading" />
-		<SearchResults v-else :areResultsDisplayed :searchTarget :searchResults :totalPages />
+		<SearchResults v-else :isFetchingDataFinished :areResultsDisplayed :searchTarget :searchResults :totalPages />
 	</div>
 </template>
 
