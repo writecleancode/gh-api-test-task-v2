@@ -83,10 +83,10 @@ export const getMatchingRepositories = async (
 			})
 		);
 
-		return { results: repositoryData, results_category: 'repositories', results_total: Number(response.data.total_count) };
+		return { results: repositoryData, resultsCategory: 'repositories', resultsTotal: Number(response.data.total_count) };
 	} catch (error) {
 		console.log(error);
-		return { results: [], results_category: 'repositories', results_total: 0 };
+		return { results: [], resultsCategory: 'repositories', resultsTotal: 0 };
 	}
 };
 
@@ -118,9 +118,9 @@ export const getMatchingUsers = async (
 			avatarUrl: resultItem.avatar_url,
 		}));
 
-		return { results, results_category: 'users', results_total: Number(response.data.total_count) };
+		return { results, resultsCategory: 'users', resultsTotal: Number(response.data.total_count) };
 	} catch (error) {
 		console.log(error);
-		return { results: [], results_category: 'users', results_total: 0 };
+		return { results: [], resultsCategory: 'users', resultsTotal: 0 };
 	}
 };

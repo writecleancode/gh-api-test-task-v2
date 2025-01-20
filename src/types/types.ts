@@ -2,8 +2,8 @@ export type clearSearchInput = () => string;
 
 export type searchResultsDataType = {
 	results: Record<string, any>[];
-	results_category: string;
-	results_total: number;
+	resultsCategory: string;
+	resultsTotal: number;
 };
 
 export type handleFormSubmit = () => void;

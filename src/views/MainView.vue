@@ -64,9 +64,9 @@ const handlePaginationButtonClick = (e: Event) => (currentPage.value = Number((e
 const handleSearchResults = (data: searchResultsDataType) => {
 	searchResults.value = {
 		...initialSearchResultsState,
-		[data.results_category]: data.results,
+		[data.resultsCategory]: data.results,
 	};
-	resultsNumber.value = data.results_total;
+	resultsNumber.value = data.resultsTotal;
 
 	isLoading.value = false;
 	isFetchingDataFinished.value = true;
