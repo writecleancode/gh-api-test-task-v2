@@ -35,6 +35,7 @@ const getContributors = async (contributorsUrl: string) => {
 		});
 
 		const commitsDataArr = response.data.map((item: Record<string, any>) => ({
+			id: item.id,
 			login: item.login,
 			avatarUrl: item.avatar_url,
 			profileUrl: item.html_url,

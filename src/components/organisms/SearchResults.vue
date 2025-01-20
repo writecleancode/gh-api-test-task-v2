@@ -45,9 +45,9 @@ const props = defineProps({
 							<ul class="contributors-list">
 								<li v-for="contributor in searchResult.contributors" class="contributors-list-item">
 									<img :src="contributor.avatarUrl" alt="" class="contributor-avatar-img" />
-									<a :href="contributor.profileUrl" class="contributors-info-text contributors-author">
+									<RouterLink :to="`users/${contributor.id}`" class="contributors-info-text contributors-author">
 										{{ contributor.login }}
-									</a>
+									</RouterLink>
 								</li>
 							</ul>
 						</div>
