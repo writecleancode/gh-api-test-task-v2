@@ -1,5 +1,12 @@
 export type clearSearchInput = () => string;
 
+export type dataType = {
+	error?: any;
+	results: Record<string, any>[];
+	results_category: string;
+	results_total: number;
+};
+
 export type handleFormSubmit = () => void;
 
 export type handleInputChangeType = (e: Event) => string;

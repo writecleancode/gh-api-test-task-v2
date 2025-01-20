@@ -4,21 +4,15 @@ import SearchSettings from '@/components/molecules/SearchSettings.vue';
 import LoadingAnimation from '@/components/atoms/LoadingAnimation.vue';
 import SearchResults from '@/components/organisms/SearchResults.vue';
 
-import { Octokit } from '@octokit/core';
 import { computed, provide, ref, watch } from 'vue';
+import { getMatchingRepositories, getMatchingUsers } from '@/hooks/useSearch';
+import type { dataType } from '@/types/types';
 
-const API_TOKEN = import.meta.env.VITE_GH_TOKEN;
 const initialSearchTarget = 'repositories';
 const initialSearchResultsState = { repositories: [], users: [] };
 const initialResultsPerPageValue = 20;
 
-const octokit = new Octokit({ auth: API_TOKEN });
-const requestHeaders = {
-	'X-GitHub-Api-Version': '2022-11-28',
-};
-
 const isLoading = ref(false);
-// const areResultsDisplayed = ref(false);
 const isFetchingDataFinished = ref(false);
 const searchInputValue = ref('');
 const sortValue = ref('');
@@ -32,9 +26,6 @@ const totalPages = computed(() => {
 const currentPage = ref(1);
 const searchResults = ref(initialSearchResultsState);
 const areResultsDisplayed = computed(() => {
-	// (searchResults.value.repositories.length > 0 && searchTarget.value === 'repositories') ||
-	// 	(searchResults.value.users.length > 0 && searchTarget.value === 'users');
-
 	if (searchResults.value.repositories.length > 0 && searchTarget.value === 'repositories') {
 		return true;
 	} else if (searchResults.value.users.length > 0 && searchTarget.value === 'users') {
@@ -61,7 +52,6 @@ const handleOderCheckboxChange = (e: Event) => {
 const handleResultsPerPageValueChange = (e: Event) => (resultsPerPageValue.value = Number((e.target as HTMLSelectElement).value));
 
 const handleSearchTargetButtonClick = (e: Event) => {
-	// areResultsDisplayed.value = false;
 	isFetchingDataFinished.value = false;
 	sortValue.value = '';
 	resultsNumber.value = 0;
@@ -71,132 +61,41 @@ const handleSearchTargetButtonClick = (e: Event) => {
 
 const handlePaginationButtonClick = (e: Event) => (currentPage.value = Number((e.target as HTMLButtonElement).dataset.page));
 
-const handleFormSubmit = () => {
+const handleSearchResults = (data: dataType) => {
+	searchResults.value = {
+		...initialSearchResultsState,
+		[data.results_category]: data.results,
+	};
+	resultsNumber.value = data.results_total;
+	
+	isLoading.value = false;
+	isFetchingDataFinished.value = true;
+};
+
+const handleFormSubmit = async () => {
 	if (!searchInputValue.value) return;
 
 	isLoading.value = true;
 	isFetchingDataFinished.value = false;
+
 	if (searchTarget.value === 'repositories') {
-		getMatchingRepositories(searchInputValue.value);
-	} else {
-		getMatchingUsers(searchInputValue.value);
-	}
-};
-
-const handleSearchResults = (resultsType: string, resultsArr: Record<string, any>[]) => {
-	searchResults.value = {
-		...initialSearchResultsState,
-		[resultsType]: resultsArr,
-	};
-	isLoading.value = false;
-	// areResultsDisplayed.value = true;
-};
-
-const getCommits = async (commitsUrl: string) => {
-	try {
-		const response = await octokit.request({
-			method: 'GET',
-			url: commitsUrl,
-			headers: requestHeaders,
-		});
-
-		const commitsDataArr = response.data.map((item: Record<string, any>) => ({
-			message: item.commit.message,
-			date: item.commit.author.date,
-			author: item.commit.author.name,
-		}));
-
-		return commitsDataArr;
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-const getContributors = async (contributorsUrl: string) => {
-	try {
-		const response = await octokit.request({
-			method: 'GET',
-			url: contributorsUrl,
-			headers: requestHeaders,
-		});
-
-		const commitsDataArr = response.data.map((item: Record<string, any>) => ({
-			login: item.login,
-			avatarUrl: item.avatar_url,
-			profileUrl: item.html_url,
-		}));
-
-		return commitsDataArr;
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-const getMatchingRepositories = async (searchPhrase: string) => {
-	try {
-		const response = await octokit.request({
-			method: 'GET',
-			url: `/search/repositories?q=${searchPhrase}`,
-			sort: sortValue.value,
-			order: orderValue.value,
-			per_page: resultsPerPageValue.value,
-			page: currentPage.value,
-			headers: {
-				...requestHeaders,
-				accept: 'application/vnd.github+json',
-			},
-		});
-
-		const repositoryData = await Promise.all(
-			response.data.items.map(async (resultItem: Record<string, any>) => {
-				const commits = resultItem.size > 0 ? await getCommits(resultItem.commits_url) : [];
-				const contributors = resultItem.size > 0 ? await getContributors(resultItem.contributors_url) : [];
-
-				return {
-					id: resultItem.id,
-					title: resultItem.full_name,
-					url: resultItem.html_url,
-					commits,
-					contributors,
-				};
-			})
+		const data = await getMatchingRepositories(
+			searchInputValue.value,
+			sortValue.value,
+			orderValue.value,
+			resultsPerPageValue.value,
+			currentPage.value
 		);
-
-		handleSearchResults('repositories', repositoryData);
-		resultsNumber.value = Number(response.data.total_count);
-		isFetchingDataFinished.value = true;
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-const getMatchingUsers = async (searchPhrase: string) => {
-	try {
-		const response = await octokit.request({
-			method: 'GET',
-			url: `/search/users?q=${searchPhrase}`,
-			sort: sortValue.value,
-			order: orderValue.value,
-			per_page: resultsPerPageValue.value,
-			page: currentPage.value,
-			headers: {
-				...requestHeaders,
-				accept: 'application/vnd.github+json',
-			},
-		});
-
-		const results = response.data.items.map((resultItem: Record<string, any>) => ({
-			id: resultItem.id,
-			name: resultItem.login,
-			profileUrl: resultItem.html_url,
-			avatarUrl: resultItem.avatar_url,
-		}));
-
-		handleSearchResults('users', results);
-		resultsNumber.value = Number(response.data.total_count);
-		isFetchingDataFinished.value = true;
-	} catch (error) {
-		console.log(error);
+		handleSearchResults(data);
+	} else {
+		const data = await getMatchingUsers(
+			searchInputValue.value,
+			sortValue.value,
+			orderValue.value,
+			resultsPerPageValue.value,
+			currentPage.value
+		);
+		handleSearchResults(data);
 	}
 };
 
