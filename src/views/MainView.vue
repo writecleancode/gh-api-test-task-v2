@@ -4,9 +4,9 @@ import SearchSettings from '@/components/molecules/SearchSettings.vue';
 import LoadingAnimation from '@/components/atoms/LoadingAnimation.vue';
 import SearchResults from '@/components/organisms/SearchResults.vue';
 
+import type { searchResultsDataType } from '@/types/types';
 import { computed, provide, ref, watch } from 'vue';
 import { getMatchingRepositories, getMatchingUsers } from '@/hooks/useSearch';
-import type { dataType } from '@/types/types';
 
 const initialSearchTarget = 'repositories';
 const initialSearchResultsState = { repositories: [], users: [] };
@@ -61,13 +61,13 @@ const handleSearchTargetButtonClick = (e: Event) => {
 
 const handlePaginationButtonClick = (e: Event) => (currentPage.value = Number((e.target as HTMLButtonElement).dataset.page));
 
-const handleSearchResults = (data: dataType) => {
+const handleSearchResults = (data: searchResultsDataType) => {
 	searchResults.value = {
 		...initialSearchResultsState,
 		[data.results_category]: data.results,
 	};
 	resultsNumber.value = data.results_total;
-	
+
 	isLoading.value = false;
 	isFetchingDataFinished.value = true;
 };

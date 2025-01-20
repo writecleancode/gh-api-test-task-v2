@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/core';
-const API_TOKEN = import.meta.env.VITE_GH_TOKEN;
 
+const API_TOKEN = import.meta.env.VITE_GH_TOKEN;
 const octokit = new Octokit({ auth: API_TOKEN });
 const requestHeaders = {
 	'X-GitHub-Api-Version': '2022-11-28',
@@ -85,7 +85,7 @@ export const getMatchingRepositories = async (
 		return { results: repositoryData, results_category: 'repositories', results_total: Number(response.data.total_count) };
 	} catch (error) {
 		console.log(error);
-		return { error, results: [], results_category: 'repositories', results_total: 0 };
+		return { results: [], results_category: 'repositories', results_total: 0 };
 	}
 };
 
@@ -120,6 +120,6 @@ export const getMatchingUsers = async (
 		return { results, results_category: 'users', results_total: Number(response.data.total_count) };
 	} catch (error) {
 		console.log(error);
-		return { error, results: [], results_category: 'users', results_total: 0 };
+		return { results: [], results_category: 'users', results_total: 0 };
 	}
 };

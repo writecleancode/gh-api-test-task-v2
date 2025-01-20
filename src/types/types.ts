@@ -1,7 +1,6 @@
 export type clearSearchInput = () => string;
 
-export type dataType = {
-	error?: any;
+export type searchResultsDataType = {
 	results: Record<string, any>[];
 	results_category: string;
 	results_total: number;
