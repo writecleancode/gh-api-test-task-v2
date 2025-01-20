@@ -2,8 +2,8 @@
 import Xicon from '@/assets/icons/Xicon.vue';
 import SearchIcon from '@/assets/icons/SearchIcon.vue';
 
-import { inject, type PropType } from 'vue';
 import type { clearSearchInput, handleInputChangeType } from '@/types/types';
+import { inject, ref, type PropType } from 'vue';
 
 const props = defineProps({
 	handleFormSubmit: {
@@ -14,18 +14,35 @@ const props = defineProps({
 
 const searchInputValue = inject('searchInputValue');
 const handleInputChange = inject<handleInputChangeType>('handleInputChange');
-const clearSearchInput = inject<clearSearchInput>('clearSearchInput');
+const clearSearchInput = inject<clearSearchInput>('clearSearchInput', () => '');
+
+const searchTarget = inject('searchTarget');
+
+const searchInputRef = ref<HTMLInputElement | null>(null);
+
+const handleClearSearchInputButtonClick = () => {
+	clearSearchInput();
+	searchInputRef.value?.focus();
+};
 </script>
 
 <template>
 	<div class="search-input-wrapper">
-		<input type="text" name="search" id="search" class="search-input" :value="searchInputValue" @input="handleInputChange" />
+		<input
+			type="text"
+			name="search"
+			id="search"
+			class="search-input"
+			:value="searchInputValue"
+			@input="handleInputChange"
+			ref="searchInputRef"
+			:aria-label="`search ${searchTarget}`" />
 		<button
 			type="button"
 			v-if="searchInputValue"
 			class="clear-search-input-button"
 			aria-label="clear search input"
-			@click="clearSearchInput">
+			@click="handleClearSearchInputButtonClick">
 			<Xicon />
 		</button>
 		<button class="search-button" type="submit" title="Search!" aria-label="search">
