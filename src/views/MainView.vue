@@ -14,12 +14,11 @@ const initialResultsPerPageValue = 20;
 
 const octokit = new Octokit({ auth: API_TOKEN });
 const requestHeaders = {
-	// authorization: API_TOKEN,
 	'X-GitHub-Api-Version': '2022-11-28',
 };
 
 const isLoading = ref(false);
-const hasUserStarted = ref(false);
+const areResultsDisplayed = ref(false);
 const searchInputValue = ref('');
 const sortValue = ref('');
 const orderValue = ref('');
@@ -49,7 +48,7 @@ const handleOderCheckboxChange = (e: Event) => {
 const handleResultsPerPageValueChange = (e: Event) => (resultsPerPageValue.value = Number((e.target as HTMLSelectElement).value));
 
 const handleSearchTargetButtonClick = (e: Event) => {
-	hasUserStarted.value = false;
+	areResultsDisplayed.value = false;
 	sortValue.value = '';
 	resultsNumber.value = 0;
 	currentPage.value = 1;
@@ -75,7 +74,7 @@ const handleSearchResults = (resultsType: string, resultsArr: Record<string, any
 		[resultsType]: resultsArr,
 	};
 	isLoading.value = false;
-	hasUserStarted.value = true;
+	areResultsDisplayed.value = true;
 };
 
 const getCommits = async (commitsUrl: string) => {
@@ -195,7 +194,9 @@ provide('currentPage', currentPage);
 provide('handlePaginationButtonClick', handlePaginationButtonClick);
 
 watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
-	handleFormSubmit();
+	if (areResultsDisplayed.value) {
+		handleFormSubmit();
+	}
 });
 </script>
 
@@ -211,7 +212,7 @@ watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
 			:orderValue
 			:searchTarget />
 		<LoadingAnimation v-if="isLoading" />
-		<SearchResults v-else :hasUserStarted :searchTarget :searchResults :totalPages />
+		<SearchResults v-else :areResultsDisplayed :searchTarget :searchResults :totalPages />
 	</div>
 </template>
 

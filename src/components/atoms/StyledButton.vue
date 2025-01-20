@@ -23,6 +23,7 @@ const props = defineProps({
 	background-color: transparent;
 	font-size: 1.4rem;
 	font-weight: bold;
+	overflow: hidden;
 	-webkit-tap-highlight-color: transparent;
 
 	&::before {

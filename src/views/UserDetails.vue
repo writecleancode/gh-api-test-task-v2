@@ -152,7 +152,7 @@ onMounted(async () => {
 }
 
 .user-details-wrapper {
-	padding: 0.8rem;
+	padding: 1.6rem 0.8rem 0.8rem;
 }
 
 .user-data-wrapper {

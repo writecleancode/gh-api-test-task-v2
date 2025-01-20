@@ -2,7 +2,7 @@
 import Pagination from '@/components/molecules/Pagination.vue';
 
 const props = defineProps({
-	hasUserStarted: {
+	areResultsDisplayed: {
 		type: Boolean,
 		required: true,
 	},
@@ -66,7 +66,7 @@ const props = defineProps({
 			</ul>
 		</template>
 		<template v-else>
-			<p v-if="hasUserStarted" class="no-matching-results-text">No matching {{ searchTarget }} found...</p>
+			<p v-if="areResultsDisplayed" class="no-matching-results-text">No matching {{ searchTarget }} found...</p>
 		</template>
 		<Pagination v-if="totalPages > 1" :totalPages />
 	</div>
