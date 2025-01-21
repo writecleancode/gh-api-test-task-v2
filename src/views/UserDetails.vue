@@ -112,7 +112,7 @@ onMounted(async () => {
 						<p>Created</p>
 						<p>{{ formatDate(repository.created_at) }}</p>
 					</div>
-					<div class="user-data-repository-box">
+					<div class="user-data-repository-box" v-if="repository.language">
 						<p>Main language</p>
 						<p>{{ repository.language }}</p>
 					</div>

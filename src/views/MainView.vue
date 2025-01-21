@@ -13,27 +13,16 @@ const initialSearchResultsState = { repositories: [], users: [] };
 const initialResultsPerPageValue = 20;
 
 const isLoading = ref(false);
-const isFetchingDataFinished = ref(false);
 const searchInputValue = ref('');
 const sortValue = ref('');
 const orderValue = ref('');
 const resultsPerPageValue = ref(initialResultsPerPageValue);
 const searchTarget = ref(initialSearchTarget);
+const currentResultsCategory = ref('');
 const resultsNumber = ref(0);
-const totalPages = computed(() => {
-	return Math.ceil(resultsNumber.value / resultsPerPageValue.value);
-});
+const totalPages = computed(() => Math.ceil(resultsNumber.value / resultsPerPageValue.value));
 const currentPage = ref(1);
 const searchResults = ref(initialSearchResultsState);
-const areResultsDisplayed = computed(() => {
-	if (searchResults.value.repositories.length > 0 && searchTarget.value === 'repositories') {
-		return true;
-	} else if (searchResults.value.users.length > 0 && searchTarget.value === 'users') {
-		return true;
-	} else {
-		return false;
-	}
-});
 
 const handleInputChange = (e: Event) => (searchInputValue.value = (e.target as HTMLInputElement).value);
 
@@ -52,7 +41,6 @@ const handleOderCheckboxChange = (e: Event) => {
 const handleResultsPerPageValueChange = (e: Event) => (resultsPerPageValue.value = Number((e.target as HTMLSelectElement).value));
 
 const handleSearchTargetButtonClick = (e: Event) => {
-	isFetchingDataFinished.value = false;
 	sortValue.value = '';
 	resultsNumber.value = 0;
 	currentPage.value = 1;
@@ -67,16 +55,16 @@ const handleSearchResults = (data: searchResultsDataType) => {
 		[data.resultsCategory]: data.results,
 	};
 	resultsNumber.value = data.resultsTotal;
+	currentResultsCategory.value = data.resultsCategory;
 
 	isLoading.value = false;
-	isFetchingDataFinished.value = true;
 };
 
 const handleFormSubmit = async () => {
 	if (!searchInputValue.value) return;
 
 	isLoading.value = true;
-	isFetchingDataFinished.value = false;
+	currentResultsCategory.value = '';
 
 	if (searchTarget.value === 'repositories') {
 		const data = await getMatchingRepositories(
@@ -111,7 +99,10 @@ provide('currentPage', currentPage);
 provide('handlePaginationButtonClick', handlePaginationButtonClick);
 
 watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
-	if (areResultsDisplayed.value) {
+	if (
+		currentResultsCategory.value === searchTarget.value &&
+		(searchResults.value.repositories.length || searchResults.value.users.length)
+	) {
 		handleFormSubmit();
 	}
 });
@@ -129,7 +120,7 @@ watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
 			:orderValue
 			:searchTarget />
 		<LoadingAnimation v-if="isLoading" />
-		<SearchResults v-else :isFetchingDataFinished :areResultsDisplayed :searchTarget :searchResults :totalPages />
+		<SearchResults v-else :searchTarget :currentResultsCategory :totalPages :searchResults />
 	</div>
 </template>
 

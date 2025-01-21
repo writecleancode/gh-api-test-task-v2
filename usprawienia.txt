@@ -1,0 +1,20 @@
+Techniczne & czytelność kodu:
+• usunięto zmianną 'hasUserStarted', a jej funkcję pełni nowa zmienna: 'currentResultsCategory' (co wyeliminowała poniższe błędy)
+	- naprawiono błąd, w którym zmiana opcji sort/direction/per-page powodowała nieporządane wywołanie funkcji pobierania danych przed wyświetleniem wyników (przed rozpoczęciem wyszukiwania)
+	- w przypadku, kiedy nie znaleziono pasujących rezultatów, zmiana opcji wyszukiwania nie powoduje ponownego zapytania do API
+	- zmiana kategorii wyszukiwania z pierwotnej na inną i znów na pierwotną nie powoduje ukrycia komunikatu o braku pasujących wyników
+
+• przeniesiono funkcje odpowiedzialne za komunikację z Github API do hooka 'useSearch'
+
+
+UX:
+• dodano focus na 'search input' po kliknięciu w przycisk usuwający zawrtość inputu
+
+
+Accessibility:
+• dodano atrybut 'aria-label' to 'search input'
+
+
+Style:
+• drobne poprawy wizualne (CSS)
+• dodano faviconę

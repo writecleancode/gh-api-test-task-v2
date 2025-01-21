@@ -2,15 +2,11 @@
 import Pagination from '@/components/molecules/Pagination.vue';
 
 const props = defineProps({
-	isFetchingDataFinished: {
-		type: Boolean,
-		required: true,
-	},
-	areResultsDisplayed: {
-		type: Boolean,
-		required: true,
-	},
 	searchTarget: {
+		type: String,
+		required: true,
+	},
+	currentResultsCategory: {
 		type: String,
 		required: true,
 	},
@@ -70,7 +66,7 @@ const props = defineProps({
 			</ul>
 		</template>
 		<template v-else>
-			<p v-if="isFetchingDataFinished" class="no-matching-results-text">No matching {{ searchTarget }} found...</p>
+			<p v-if="currentResultsCategory === searchTarget" class="no-matching-results-text">No matching {{ searchTarget }} found...</p>
 		</template>
 		<Pagination v-if="totalPages > 1" :totalPages />
 	</div>
