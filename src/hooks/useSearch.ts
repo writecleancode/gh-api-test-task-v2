@@ -23,6 +23,7 @@ const getCommits = async (commitsUrl: string) => {
 		return commitsDataArr;
 	} catch (error) {
 		console.log(error);
+		return [];
 	}
 };
 
@@ -34,16 +35,17 @@ const getContributors = async (contributorsUrl: string) => {
 			headers: requestHeaders,
 		});
 
-		const commitsDataArr = response.data.map((item: Record<string, any>) => ({
+		const contributorsDataArr = response.data.map((item: Record<string, any>) => ({
 			id: item.id,
 			login: item.login,
 			avatarUrl: item.avatar_url,
 			profileUrl: item.html_url,
 		}));
 
-		return commitsDataArr;
+		return contributorsDataArr;
 	} catch (error) {
 		console.log(error);
+		return [];
 	}
 };
 
@@ -111,14 +113,14 @@ export const getMatchingUsers = async (
 			},
 		});
 
-		const results = response.data.items.map((resultItem: Record<string, any>) => ({
+		const usersData = response.data.items.map((resultItem: Record<string, any>) => ({
 			id: resultItem.id,
 			name: resultItem.login,
 			profileUrl: resultItem.html_url,
 			avatarUrl: resultItem.avatar_url,
 		}));
 
-		return { results, resultsCategory: 'users', resultsTotal: Number(response.data.total_count) };
+		return { results: usersData, resultsCategory: 'users', resultsTotal: Number(response.data.total_count) };
 	} catch (error) {
 		console.log(error);
 		return { results: [], resultsCategory: 'users', resultsTotal: 0 };
