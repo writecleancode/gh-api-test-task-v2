@@ -1,20 +1,38 @@
-# gh-api-test-test
+# gh-api-test-task v2
 
-This template should help get you started developing with Vue 3 in Vite.
+Dalszy rozwój aplikacji z zadania rekrutacyjnego (z branchu gh-api-test-task).
 
-## Recommended IDE Setup
+Oryginalne zadanie ze względu na ograniczony czas miało pewne niedociągnięcia, które nie dawały mi spokoju, dlatego pracują nad wyeliminowaniem błędów, poprawą jakości działania aplikacji oraz poprawą jakości i czytelności kodu.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
+## Usprawnienia względem pierwotnego zadania
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Techniczne & czytelność kodu:
+• w wynikach wyszukiwania repozytoriów: kliknięcie na użytkownika przenosi na podstronę-widok z informacjami o nim, a nie bezpośrednio na profil Github (wcześniej takie działanie było tylko dla wyszukiwania użytkowników)
+• usunięto zmianną 'hasUserStarted', a jej funkcję pełni nowa zmienna: 'currentResultsCategory' (co wyeliminowała poniższe błędy)
+	- naprawiono błąd, w którym zmiana opcji sort/direction/per-page powodowała nieporządane wywołanie funkcji pobierania danych przed wyświetleniem wyników (przed rozpoczęciem wyszukiwania)
+	- w przypadku, kiedy nie znaleziono pasujących rezultatów, zmiana opcji wyszukiwania nie powoduje ponownego zapytania do API
+	- zmiana kategorii wyszukiwania z pierwotnej na inną i znów na pierwotną nie powoduje ukrycia komunikatu o braku pasujących wyników
 
-## Customize configuration
+• przeniesiono funkcje odpowiedzialne za komunikację z Github API do hooka 'useSearch'
+• zastosowano 'implicit return' w wybranych funkcjach
+• poprawiono nazwy zmiennych w funkcjach pobierających dane z API (obecnie nazwa są bardziej spójne)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
 
-## Project Setup
+UX:
+• dodano focus na 'search input' po kliknięciu w przycisk usuwający zawrtość inputu
+
+
+Accessibility:
+• dodano atrybut 'aria-label' to 'search input'
+
+
+Style:
+• drobne poprawy wizualne (CSS)
+• dodano faviconę
+
+
+<!-- ## Project Setup
 
 ```sh
 npm install
@@ -30,4 +48,4 @@ npm run dev
 
 ```sh
 npm run build
-```
+``` -->
