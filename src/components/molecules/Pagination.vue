@@ -2,7 +2,7 @@
 import type { handlePaginationButtonClick } from '@/types/types';
 import { inject } from 'vue';
 
-const props = defineProps({
+defineProps({
 	totalPages: {
 		type: Number,
 		required: true,

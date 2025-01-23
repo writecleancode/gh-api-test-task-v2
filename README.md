@@ -17,6 +17,7 @@ Oryginalne zadanie ze względu na ograniczony czas miało pewne niedociągnięci
 - przeniesiono funkcje odpowiedzialne za komunikację z Github API do hooka 'useSearch'
 - zastosowano 'implicit return' w wybranych funkcjach
 - poprawiono nazwy zmiennych w funkcjach pobierających dane z API (obecnie nazwa są bardziej spójne)
+- 'search input': zastąpiono dyrektywy v-bind & v-on:input dyrektywą v-model
 
 
 **UX:**
@@ -24,7 +25,7 @@ Oryginalne zadanie ze względu na ograniczony czas miało pewne niedociągnięci
 
 
 **Accessibility:**
-- dodano atrybut 'aria-label' to 'search input'
+- dodano atrybut 'aria-label' do 'search input'
 
 
 **Style:**

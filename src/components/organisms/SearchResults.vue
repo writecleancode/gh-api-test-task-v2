@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Pagination from '@/components/molecules/Pagination.vue';
 
-const props = defineProps({
+defineProps({
 	searchTarget: {
 		type: String,
 		required: true,

@@ -2,10 +2,10 @@
 import Xicon from '@/assets/icons/Xicon.vue';
 import SearchIcon from '@/assets/icons/SearchIcon.vue';
 
-import type { clearSearchInput, handleInputChangeType } from '@/types/types';
+import type { clearSearchInput } from '@/types/types';
 import { inject, ref, type PropType } from 'vue';
 
-const props = defineProps({
+defineProps({
 	handleFormSubmit: {
 		type: Function as PropType<() => void>,
 		required: true,
@@ -13,7 +13,6 @@ const props = defineProps({
 });
 
 const searchInputValue = inject('searchInputValue');
-const handleInputChange = inject<handleInputChangeType>('handleInputChange');
 const clearSearchInput = inject<clearSearchInput>('clearSearchInput', () => '');
 
 const searchTarget = inject('searchTarget');
@@ -33,8 +32,7 @@ const handleClearSearchInputButtonClick = () => {
 			name="search"
 			id="search"
 			class="search-input"
-			:value="searchInputValue"
-			@input="handleInputChange"
+			v-model="searchInputValue"
 			ref="searchInputRef"
 			:aria-label="`search ${searchTarget}`" />
 		<button

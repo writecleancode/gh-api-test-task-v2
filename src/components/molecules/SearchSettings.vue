@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 
-const props = defineProps({
+defineProps({
 	sortValue: {
 		type: String,
 		required: true,
