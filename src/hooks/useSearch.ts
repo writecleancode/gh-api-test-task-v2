@@ -1,10 +1,4 @@
-import { Octokit } from '@octokit/core';
-
-const API_TOKEN = import.meta.env.VITE_GH_TOKEN;
-const octokit = new Octokit({ auth: API_TOKEN });
-const requestHeaders = {
-	'X-GitHub-Api-Version': '2022-11-28',
-};
+import { octokit, requestHeaders } from '@/uilts/githubApiData';
 
 const getCommits = async (commitsUrl: string) => {
 	try {

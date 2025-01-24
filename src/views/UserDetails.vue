@@ -1,66 +1,22 @@
 <script setup lang="ts">
 import LoadingAnimation from '@/components/atoms/LoadingAnimation.vue';
 import ArrowLeft from '@/assets/icons/ArrowLeft.vue';
-
-import { Octokit } from '@octokit/core';
-import { useRoute } from 'vue-router';
-import { onMounted, ref } from 'vue';
 import ArrowLeftSmall from '@/assets/icons/ArrowLeftSmall.vue';
 
-const API_TOKEN = import.meta.env.VITE_GH_TOKEN;
+import { useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { formatDate, getUser } from '@/hooks/useUser';
+import UserProfile from '@/components/molecules/UserProfile.vue';
+
 const route = useRoute();
 const userId = Number(route.params.id);
 const isLoading = ref(true);
 const userData = ref<Record<string, any>>({});
 
-const octokit = new Octokit({
-	auth: API_TOKEN,
-});
-const requestHeaders = {
-	// authorization: API_TOKEN,
-	'X-GitHub-Api-Version': '2022-11-28',
-};
-
-const formatDate = (givenDate: string) => new Date(givenDate).toLocaleDateString('PL-pl');
-
-const getRepositoriesData = async (reposUrl: string) => {
-	try {
-		const response = await octokit.request({
-			method: 'GET',
-			url: reposUrl,
-			sort: 'updated',
-			headers: requestHeaders,
-		});
-
-		const repositoriesArr = response.data;
-		return repositoriesArr;
-	} catch (error) {
-		console.log(error);
-	}
-};
-
 onMounted(async () => {
-	try {
-		const response = await octokit.request('GET /user/{account_id}', {
-			account_id: userId,
-			headers: {
-				'X-GitHub-Api-Version': '2022-11-28',
-			},
-		});
-
-		const repositories = await getRepositoriesData(response.data.repos_url);
-
-		const user = response.data;
-		userData.value = {
-			...user,
-			repositoriesData: repositories,
-		};
-
-		isLoading.value = false;
-		formatDate(user.created_at);
-	} catch (error) {
-		console.log(error);
-	}
+	const user = await getUser(userId);
+	userData.value = user;
+	isLoading.value = false;
 });
 </script>
 
@@ -70,70 +26,42 @@ onMounted(async () => {
 			<ArrowLeft />
 		</RouterLink>
 		<LoadingAnimation v-if="isLoading" />
-		<div v-else class="user-data-wrapper">
-			<div class="user-profile-wrapper">
-				<div class="user-basic-data-box">
-					<img :src="userData.avatar_url" class="user-data-img" alt="" />
-					<a :href="userData.html_url" class="text-semibold">{{ userData.login }}</a>
-					<a :href="userData.html_url">{{ userData.name }}</a>
-				</div>
-				<div class="user-data-box">
-					<p>Joined</p>
-					<p>{{ formatDate(userData.created_at) }}</p>
-				</div>
-				<div class="user-data-box">
-					<p>Repositories</p>
-					<p>{{ userData.public_repos }}</p>
-				</div>
-				<div class="user-data-box">
-					<p>Followers</p>
-					<p>{{ userData.followers }}</p>
-				</div>
-				<div v-if="userData.collaborators" class="user-data-box">
-					<p>Collaborators</p>
-					<p>{{ userData.collaborators }}</p>
-				</div>
-				<div v-if="userData.location" class="user-data-box">
-					<p>Location</p>
-					<p>{{ userData.location }}</p>
-				</div>
-				<div v-if="userData.blog" class="user-data-box">
-					<p>Website</p>
-					<a :href="userData.blog">{{ userData.blog }}</a>
-				</div>
+		<template v-else>
+			<div v-if="userData.repositoriesData.length > 0" class="user-data-wrapper">
+				<UserProfile :userData />
+				<ul class="user-repositories-list">
+					<li v-for="repository in userData.repositoriesData" class="user-repositories-list-item">
+						<a :href="repository.html_url">
+							<span>{{ userData.login }}</span>
+							<span class="text-bold">/{{ repository.name }}</span>
+						</a>
+						<div class="user-data-repository-box">
+							<p>Created</p>
+							<p>{{ formatDate(repository.created_at) }}</p>
+						</div>
+						<div class="user-data-repository-box" v-if="repository.language">
+							<p>Main language</p>
+							<p>{{ repository.language }}</p>
+						</div>
+					</li>
+					<li class="user-repositories-list-item go-back-item">
+						<RouterLink to="/" class="go-back-item-box">
+							<ArrowLeftSmall />
+							MAIN PAGE
+						</RouterLink>
+					</li>
+				</ul>
 			</div>
-			<ul v-if="userData.repositoriesData.length" class="user-repositories-list">
-				<li v-for="repository in userData.repositoriesData" class="user-repositories-list-item">
-					<a :href="repository.html_url">
-						<span>{{ userData.login }}</span>
-						<span class="text-bold">/{{ repository.name }}</span>
-					</a>
-					<div class="user-data-repository-box">
-						<p>Created</p>
-						<p>{{ formatDate(repository.created_at) }}</p>
-					</div>
-					<div class="user-data-repository-box" v-if="repository.language">
-						<p>Main language</p>
-						<p>{{ repository.language }}</p>
-					</div>
-				</li>
-				<li class="user-repositories-list-item go-back-item">
-					<RouterLink to="/" class="go-back-item-box">
-						<ArrowLeftSmall />
-						MAIN PAGE
-					</RouterLink>
-				</li>
-			</ul>
-			<p v-else>This user has no repositories yet</p>
-		</div>
+			<div v-else class="no-repositories-info-wrapper">
+				<UserProfile :userData />
+				<p class="no-repositories-text">This user has no repositories yet</p>
+				<img src="@/assets/img/nothing-to-see.gif" alt="" />
+			</div>
+		</template>
 	</div>
 </template>
 
 <style lang="scss" scoped>
-.text-semibold {
-	font-weight: 600;
-}
-
 .text-bold {
 	font-weight: 700;
 }
@@ -159,32 +87,6 @@ onMounted(async () => {
 	display: flex;
 	flex-direction: column;
 	padding: 0.8rem 0;
-}
-
-.user-basic-data-box {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.user-data-img {
-	margin-bottom: 1.2rem;
-	border-radius: 50%;
-	max-width: 80px;
-	aspect-ratio: 1 / 1;
-	box-shadow: 0 0 0 1px #1f232826;
-}
-
-.user-data-box {
-	display: flex;
-	flex-direction: column-reverse;
-	align-items: center;
-	margin-top: 2rem;
-
-	p:first-child {
-		font-size: 1.2rem;
-		opacity: 0.85;
-	}
 }
 
 .user-repositories-list {
@@ -237,6 +139,22 @@ onMounted(async () => {
 	}
 }
 
+.no-repositories-info-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.6rem;
+	margin-top: 4rem;
+	margin-bottom: 2.4rem;
+}
+
+.no-repositories-text {
+	text-align: center;
+	font-weight: 500;
+	color: #ff5858;
+	color: #dd6060;
+}
+
 @media (min-width: 780px) {
 	.user-details-wrapper {
 		padding-top: 0;
@@ -252,13 +170,19 @@ onMounted(async () => {
 		padding-top: 0;
 		max-width: 1440px;
 	}
+}
 
-	.user-profile-wrapper {
-		position: sticky;
-		top: 0;
-		left: 0;
-		padding: 3.2rem;
-		max-height: max-content;
+@media (min-width: 920px) {
+	.user-details-wrapper {
+		padding-left: 3.2rem;
+		padding-right: 3.2rem;
+	}
+}
+
+@media (min-width: 1400px) {
+	.user-details-wrapper {
+		padding-left: 0;
+		padding-right: 0;
 	}
 }
 </style>
