@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useResultsContext } from '@/providers/useResults';
 import type { PropType } from 'vue';
 
 defineProps({
@@ -14,23 +15,13 @@ defineProps({
 		type: Function as PropType<(e: Event) => void>,
 		required: true,
 	},
-	handleResultsPerPageValueChange: {
-		type: Function as PropType<(e: Event) => number>,
-		required: true,
-	},
-	resultsPerPageValue: {
-		type: Number,
-		required: true,
-	},
 	orderValue: {
 		type: String,
 		required: true,
 	},
-	searchTarget: {
-		type: String,
-		required: true,
-	},
 });
+
+const { resultsPerPageValue, searchTarget, handleResultsPerPageValueChange } = useResultsContext();
 </script>
 
 <template>

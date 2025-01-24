@@ -3,64 +3,23 @@ import SearchForm from '@/components/molecules/SearchForm.vue';
 import SearchSettings from '@/components/molecules/SearchSettings.vue';
 
 import { getMatchingRepositories, getMatchingUsers } from '@/hooks/useSearch';
+import { useResultsContext } from '@/providers/useResults';
 import { provide, ref, watch } from 'vue';
-
-const {
-	resultsPerPageValue,
-	searchTarget,
-	currentPage,
-	currentResultsCategory,
-	setLoadingTrue,
-	resetCurrentResultsCategory,
-	handleSearchResults,
-	searchResults,
-	resetSearchParameters,
-} = defineProps({
-	resultsPerPageValue: {
-		type: Number,
-		required: true,
-	},
-	searchTarget: {
-		type: String,
-		required: true,
-	},
-	currentPage: {
-		type: Number,
-		required: true,
-	},
-	currentResultsCategory: {
-		type: String,
-		required: true,
-	},
-	setLoadingTrue: {
-		type: Function,
-		required: true,
-	},
-	resetCurrentResultsCategory: {
-		type: Function,
-		required: true,
-	},
-	handleSearchResults: {
-		type: Function,
-		required: true,
-	},
-	searchResults: {
-		type: Object,
-		required: true,
-	},
-	handleResultsPerPageValueChange: {
-		type: Function,
-		required: true,
-	},
-	resetSearchParameters: {
-		type: Function,
-		required: true,
-	},
-});
 
 const searchInputValue = ref('');
 const sortValue = ref('');
 const orderValue = ref('');
+const {
+	resultsPerPageValue,
+	currentPage,
+	searchTarget,
+	currentResultsCategory,
+	searchResults,
+	setLoadingTrue,
+	resetCurrentResultsCategory,
+	resetSearchParameters,
+	handleSearchResults,
+} = useResultsContext();
 
 const clearSearchInput = () => (searchInputValue.value = '');
 
@@ -85,11 +44,23 @@ const handleFormSubmit = async () => {
 	setLoadingTrue();
 	resetCurrentResultsCategory();
 
-	if (searchTarget === 'repositories') {
-		const data = await getMatchingRepositories(searchInputValue.value, sortValue.value, orderValue.value, resultsPerPageValue, currentPage);
+	if (searchTarget.value === 'repositories') {
+		const data = await getMatchingRepositories(
+			searchInputValue.value,
+			sortValue.value,
+			orderValue.value,
+			resultsPerPageValue.value,
+			currentPage.value
+		);
 		handleSearchResults(data);
 	} else {
-		const data = await getMatchingUsers(searchInputValue.value, sortValue.value, orderValue.value, resultsPerPageValue.value, currentPage);
+		const data = await getMatchingUsers(
+			searchInputValue.value,
+			sortValue.value,
+			orderValue.value,
+			resultsPerPageValue.value,
+			currentPage.value
+		);
 		handleSearchResults(data);
 	}
 };
@@ -100,8 +71,11 @@ provide('handleFormSubmit', handleFormSubmit);
 
 provide('handleSearchTargetButtonClick', handleSearchTargetButtonClick);
 
-watch([sortValue, orderValue, () => resultsPerPageValue, () => currentPage], () => {
-	if (currentResultsCategory === searchTarget && (searchResults.repositories.length || searchResults.users.length)) {
+watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
+	if (
+		currentResultsCategory.value === searchTarget.value &&
+		(searchResults.value.repositories.length || searchResults.value.users.length)
+	) {
 		handleFormSubmit();
 	}
 });
@@ -109,14 +83,7 @@ watch([sortValue, orderValue, () => resultsPerPageValue, () => currentPage], () 
 
 <template>
 	<SearchForm :handleFormSubmit />
-	<SearchSettings
-		:sortValue
-		:setSortValue
-		:handleOderCheckboxChange
-		:resultsPerPageValue
-		:handleResultsPerPageValueChange
-		:orderValue
-		:searchTarget />
+	<SearchSettings :sortValue :setSortValue :handleOderCheckboxChange :orderValue />
 </template>
 
 <style lang="scss" scoped></style>

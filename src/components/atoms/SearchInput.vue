@@ -4,6 +4,7 @@ import SearchIcon from '@/assets/icons/SearchIcon.vue';
 
 import type { clearSearchInput } from '@/types/types';
 import { inject, ref, type PropType } from 'vue';
+import { useResultsContext } from '@/providers/useResults';
 
 defineProps({
 	handleFormSubmit: {
@@ -12,10 +13,10 @@ defineProps({
 	},
 });
 
+const { searchTarget } = useResultsContext();
+
 const searchInputValue = inject('searchInputValue');
 const clearSearchInput = inject<clearSearchInput>('clearSearchInput', () => '');
-
-const searchTarget = inject('searchTarget');
 
 const searchInputRef = ref<HTMLInputElement | null>(null);
 

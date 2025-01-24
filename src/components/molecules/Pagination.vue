@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { handlePaginationButtonClick } from '@/types/types';
-import { inject } from 'vue';
+import { useResultsContext } from '@/providers/useResults';
 
-defineProps({
-	totalPages: {
-		type: Number,
-		required: true,
-	},
-});
+const handlePaginationButtonClick = (e: Event) => {
+	const newPage = (e.target as HTMLButtonElement).dataset.page;
+	newPage && setCurrentPage(newPage);
+};
 
-const currentPage = inject<number>('currentPage', 1);
-const handlePaginationButtonClick = inject<handlePaginationButtonClick>('handlePaginationButtonClick');
+const { currentPage, totalPages, setCurrentPage } = useResultsContext();
 </script>
 
 <template>

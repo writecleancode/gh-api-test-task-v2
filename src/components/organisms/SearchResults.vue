@@ -1,24 +1,9 @@
 <script setup lang="ts">
 import Pagination from '@/components/molecules/Pagination.vue';
 
-defineProps({
-	searchTarget: {
-		type: String,
-		required: true,
-	},
-	currentResultsCategory: {
-		type: String,
-		required: true,
-	},
-	totalPages: {
-		type: Number,
-		required: true,
-	},
-	searchResults: {
-		type: Object,
-		required: true,
-	},
-});
+import { useResultsContext } from '@/providers/useResults';
+
+const { searchTarget, currentResultsCategory, totalPages, searchResults } = useResultsContext();
 </script>
 
 <template>
@@ -68,7 +53,7 @@ defineProps({
 		<template v-else>
 			<p v-if="currentResultsCategory === searchTarget" class="no-matching-results-text">No matching {{ searchTarget }} found...</p>
 		</template>
-		<Pagination v-if="totalPages > 1" :totalPages />
+		<Pagination v-if="totalPages > 1" />
 	</div>
 </template>
 
