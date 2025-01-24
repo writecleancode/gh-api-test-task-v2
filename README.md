@@ -18,7 +18,7 @@ Oryginalne zadanie ze względu na ograniczony czas miało pewne niedociągnięci
 - zastosowano 'implicit return' w wybranych funkcjach
 - poprawiono nazwy zmiennych w funkcjach pobierających dane z API (obecnie nazwa są bardziej spójne)
 - 'search input': zastąpiono dyrektywy v-bind & v-on:input dyrektywą v-model
-
+- przeniesiono logikę zawiązaną z zarządzaniem rezultatami wyszukiwania do providera 'useResults'
 
 **UX:**
 - dodano focus na 'search input' po kliknięciu w przycisk usuwający zawrtość inputu
