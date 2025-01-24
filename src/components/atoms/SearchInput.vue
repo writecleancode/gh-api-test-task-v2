@@ -2,22 +2,15 @@
 import Xicon from '@/assets/icons/Xicon.vue';
 import SearchIcon from '@/assets/icons/SearchIcon.vue';
 
-import type { clearSearchInput } from '@/types/types';
-import { inject, ref, type PropType } from 'vue';
+import type { clearSearchInput, handleFormSubmit } from '@/types/types';
+import { inject, ref } from 'vue';
 import { useResultsContext } from '@/providers/useResults';
-
-defineProps({
-	handleFormSubmit: {
-		type: Function as PropType<() => void>,
-		required: true,
-	},
-});
 
 const { searchTarget } = useResultsContext();
 
 const searchInputValue = inject('searchInputValue');
 const clearSearchInput = inject<clearSearchInput>('clearSearchInput', () => '');
-
+const handleFormSubmit = inject<handleFormSubmit>('handleFormSubmit', () => {});
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
 const handleClearSearchInputButtonClick = () => {

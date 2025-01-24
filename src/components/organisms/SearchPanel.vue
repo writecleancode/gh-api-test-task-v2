@@ -82,7 +82,7 @@ watch([sortValue, orderValue, resultsPerPageValue, currentPage], () => {
 </script>
 
 <template>
-	<SearchForm :handleFormSubmit />
+	<SearchForm />
 	<SearchSettings :sortValue :setSortValue :handleOderCheckboxChange :orderValue />
 </template>
 

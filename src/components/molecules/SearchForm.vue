@@ -2,20 +2,18 @@
 import SearchInput from '@/components/atoms/SearchInput.vue';
 import StyledButton from '@/components/atoms/StyledButton.vue';
 
-import { useResultsContext } from '@/providers/useResults';
-
 import type { handleFormSubmit, handleSearchTargetButtonClick } from '@/types/types';
+import { useResultsContext } from '@/providers/useResults';
 import { inject } from 'vue';
 
 const { searchTarget } = useResultsContext();
-
 const handleFormSubmit = inject<handleFormSubmit>('handleFormSubmit', () => {});
 const handleSearchTargetButtonClick = inject<handleSearchTargetButtonClick>('handleSearchTargetButtonClick');
 </script>
 
 <template>
 	<form @submit.prevent="handleFormSubmit" class="search-form">
-		<SearchInput :handleFormSubmit />
+		<SearchInput />
 		<div class="search-target-buttons-wrapper">
 			<StyledButton
 				class="left"
