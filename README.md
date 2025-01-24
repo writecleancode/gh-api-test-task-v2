@@ -19,6 +19,8 @@ Oryginalne zadanie ze względu na ograniczony czas miało pewne niedociągnięci
 - poprawiono nazwy zmiennych w funkcjach pobierających dane z API (obecnie nazwa są bardziej spójne)
 - 'search input': zastąpiono dyrektywy v-bind & v-on:input dyrektywą v-model
 - przeniesiono logikę zawiązaną z zarządzaniem rezultatami wyszukiwania do providera 'useResults'
+- 'UserDetails': przeniesiono funkcje pobierające dane z API do hooka "useUser"
+- 'UserDetails': dodano gif i style CSS w przypadku, gdy użytkownik nie ma jeszcze żadnego repozytorium
 
 **UX:**
 - dodano focus na 'search input' po kliknięciu w przycisk usuwający zawrtość inputu
